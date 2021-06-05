@@ -5,11 +5,7 @@
 #include <cmath>
 #include <string.h>
 
-typedef int8_t  int8;
-typedef int32_t int32;
-typedef int64_t int64;
-typedef float   float32;
-typedef double  float64;
+
 
 float32 reduce_f32_array(int64 size, float32* a) {
     #if defined(AVX)
