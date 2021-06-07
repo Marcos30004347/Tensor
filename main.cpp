@@ -193,7 +193,7 @@ int main() {
     for(int i=1; i<=(SIZE); i++) d[i-1] = (float)i;
 
     std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
-    float dot = dot_f32_array(SIZE, a, b);
+    float dot = dot_f32array(SIZE, a, b);
     std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
 
     // for(int i=0; i<SIZE; i++)

@@ -2,13 +2,14 @@
 #define AVX_H
 
 #include "types.h"
-
+#include <cmath>
 #include <immintrin.h>
 
-float32 reduce_f32_array(int64 size, float32* a) {
+float32 reduce_f32array(int64 size, float32* a) {
     __m256 r = _mm256_loadu_ps(a);
-
-    for(int32 i=8; i<size; i+=8)
+    
+    int32 i;
+    for(i=8; i<size; i+=8)
         r = _mm256_add_ps(r, _mm256_load_ps(&a[i]));
 
     r = _mm256_hadd_ps(r, r);
@@ -16,10 +17,18 @@ float32 reduce_f32_array(int64 size, float32* a) {
 
     float32 arr[8];
     _mm256_storeu_ps(arr, r);
-    return arr[3] + arr[4];
+
+    float64 x = arr[3] + arr[4];
+
+    int32 t = size%8;
+
+    for(int i=1; i<=t; i++)
+        x += a[size-i];
+
+    return x;
 }
 
-int32 reduce_i32_array(uint64 size, int32* a) {
+int32 reduce_i32array(uint64 size, int32* a) {
     __m256i r = _mm256_loadu_si256((__m256i*) &a[0]);
 
     for(int32 i=8; i<size; i+=8)
@@ -28,137 +37,229 @@ int32 reduce_i32_array(uint64 size, int32* a) {
     r = _mm256_hadd_epi32(r, r);
     r = _mm256_hadd_epi32(r, r);
 
-    return  _mm256_extract_epi32(r, 3) + 
-            _mm256_extract_epi32(r, 4);
+    int32 x = _mm256_extract_epi32(r, 3) + 
+              _mm256_extract_epi32(r, 4);
+
+    int32 t = size%8;
+
+    for(int i=1; i<=t; i++)
+        x += a[size-i];
+
+    return x;
 }
 
-void add_f32_array(uint64 size, float32* a, float32* b, float32* c) {
+void add_f32array(uint64 size, float32* a, float32* b, float32* c) {
     for(int32 i=0; i<size; i+=8) {
         __m256 v0 = _mm256_loadu_ps(&a[i]);
         __m256 v1 = _mm256_loadu_ps(&b[i]);
         _mm256_storeu_ps(&c[i], _mm256_add_ps(v0, v1));
     }
+
+    int32 t = size%8;
+    for(int i=1; i<=t; i++)
+        c[size-i] = a[size-i] + b[size-i];
 }
 
-void add_f32_array(uint64 size, float32* a, float32 b, float32* c) {
+void add_f32array_f32(uint64 size, float32* a, float32 b, float32* c) {
     __m256 v1 = _mm256_set1_ps(b);
     for(int32 i=0; i<size; i+=8) {
         __m256 v0 = _mm256_loadu_ps(&a[i]);
         _mm256_storeu_ps(&c[i], _mm256_add_ps(v0, v1));
     }
+
+    int32 t = size%8;
+    for(int i=1; i<=t; i++)
+        c[size-i] = a[size-i] + b;
 }
 
-void add_i32_array(uint64 size, int32* a, int32* b, int32* c) {
+void add_i32array(uint64 size, int32* a, int32* b, int32* c) {
     for(int32 i=0; i<size; i+=8) {
         __m256i v0 = _mm256_loadu_si256((__m256i*) &a[i]);
         __m256i v1 = _mm256_loadu_si256((__m256i*) &b[i]);
         _mm256_storeu_si256((__m256i*)&c[i], _mm256_add_epi32(v0, v1));
     }
+
+    int32 t = size%8;
+    for(int i=1; i<=t; i++)
+        c[size-i] = a[size-i] + b[size-i];
 }
 
-void add_i32_array(uint64 size, int32* a, int32 b, int32* c) {
+void add_i32array_i32(uint64 size, int32* a, int32 b, int32* c) {
     __m256i v1 = _mm256_set1_epi32(b);
     for(int32 i=0; i<size; i+=8) {
         __m256i v0 = _mm256_loadu_si256((__m256i*) &a[i]);
         _mm256_storeu_si256((__m256i*)&c[i], _mm256_add_epi32(v0, v1));
     }
+
+    int32 t = size%8;
+    for(int i=1; i<=t; i++)
+        c[size-i] = a[size-i] + b;
 }
 
-void sub_f32_array(uint64 size, float32* a, float32* b, float32* c) {
+void sub_f32array(uint64 size, float32* a, float32* b, float32* c) {
     for(int32 i=0; i<size; i+=8) {
         __m256 v0 = _mm256_loadu_ps(&a[i]);
         __m256 v1 = _mm256_loadu_ps(&b[i]);
         _mm256_storeu_ps(&c[i], _mm256_sub_ps(v0, v1));
     }
+
+    int32 t = size%8;
+    for(int i=1; i<=t; i++)
+        c[size-i] = a[size-i] - b[size-1];
 }
 
-void sub_f32_array(uint64 size, float32* a, float32 b, float32* c) {
+void sub_f32array_f32(uint64 size, float32* a, float32 b, float32* c) {
     __m256 v1 = _mm256_set1_ps(b);
     for(int32 i=0; i<size; i+=8) {
         __m256 v0 = _mm256_loadu_ps(&a[i]);
         _mm256_storeu_ps(&c[i], _mm256_sub_ps(v0, v1));
     }
+
+    int32 t = size%8;
+    for(int i=1; i<=t; i++)
+        c[size-i] = a[size-i] - b;
 }
 
-void sub_i32_array(uint64 size, int32* a, int32* b, int32* c) {
+void sub_i32array(uint64 size, int32* a, int32* b, int32* c) {
     for(int32 i=0; i<size; i+=8) {
         __m256i v0 = _mm256_loadu_si256((__m256i*) &a[0]);
         __m256i v1 = _mm256_loadu_si256((__m256i*) &b[0]);
         _mm256_store_si256((__m256i*)&c[i], _mm256_sub_epi32(v0, v1));
     }
+
+    int32 t = size%8;
+    for(int i=1; i<=t; i++)
+        c[size-i] = a[size-i] - b[size-1];
 }
 
-void sub_i32_array(uint64 size, int32* a, int32 b, int32* c) {
+void sub_i32array_i32(uint64 size, int32* a, int32 b, int32* c) {
     __m256i v1 = _mm256_set1_epi32(b);
     for(int32 i=0; i<size; i+=8) {
         __m256i v0 = _mm256_loadu_si256((__m256i*) &a[i]);
         _mm256_storeu_si256((__m256i*)&c[i], _mm256_sub_epi32(v0, v1));
     }
+
+    int32 t = size%8;
+    for(int i=1; i<=t; i++)
+        c[size-i] = a[size-i] - b;
 }
 
-void mul_i32_array(uint64 size, int32* a, int32* b, int32* c) {
+void mul_i32array(uint64 size, int32* a, int32* b, int32* c) {
     for(int32 i=0; i<size; i+=8) {
         __m256i v0 = _mm256_loadu_si256((__m256i*) &a[0]);
         __m256i v1 = _mm256_loadu_si256((__m256i*) &b[0]);
         _mm256_storeu_si256((__m256i*)&c[i], _mm256_mul_epi32(v0, v1));
     }
+
+    int32 t = size%8;
+    for(int i=1; i<=t; i++)
+        c[size-i] = a[size-i] * b[size-1];
 }
 
-void mul_i32_array(uint64 size, int32* a, int32 b, int32* c) {
+void mul_i32array_i32(uint64 size, int32* a, int32 b, int32* c) {
     int32 l[8] = { b,b,b,b,b,b,b };
     for(int32 i=0; i<size; i+=8) {
         __m256i first_values  = _mm256_loadu_si256((__m256i*)&a[i]);
         __m256i second_values = _mm256_loadu_si256((__m256i*)l);
         _mm256_storeu_si256((__m256i*)&c[i], _mm256_castps_si256(_mm256_mul_ps(_mm256_castsi256_ps(first_values), _mm256_castsi256_ps(second_values))));
     }
+
+    int32 t = size%8;
+    for(int i=1; i<=t; i++)
+        c[size-i] = a[size-i] * b;
 }
 
-void mul_f32_array(uint64 size, float32* a, float32* b, float32* c) {
+void mul_f32array(uint64 size, float32* a, float32* b, float32* c) {
     for(int32 i=0; i<size; i+=8) {
         __m256 v0 = _mm256_loadu_ps(&a[i]);
         __m256 v1 = _mm256_loadu_ps(&b[i]);
         _mm256_storeu_ps(&c[i], _mm256_mul_ps(v0, v1));
     }
+
+    int32 t = size%8;
+    for(int i=1; i<=t; i++)
+        c[size-i] = a[size-i] * b[size-1];
 }
 
-void mul_f32_array(uint64 size, float32* a, float32 b, float32* c) {
+void mul_f32array_f32(uint64 size, float32* a, float32 b, float32* c) {
     __m256 v1 = _mm256_set1_ps(b);
     for(int32 i=0; i<size; i+=8) {
         __m256 v0 = _mm256_loadu_ps(&a[i]);
         _mm256_storeu_ps(&c[i], _mm256_mul_ps(v0, v1));
     }
+
+    int32 t = size%8;
+    for(int i=1; i<=t; i++)
+        c[size-i] = a[size-i] * b;
 }
 
-void div_i32_array(uint64 size, int32* a, int32* b, int32* c) {
+void div_i32array(uint64 size, int32* a, int32* b, int32* c) {
     for(int32 i=0; i<size; i+=8) {
         __m256 v0 = _mm256_cvtepi32_ps(_mm256_loadu_epi32(&a[i]));
         __m256 v1 = _mm256_cvtepi32_ps(_mm256_loadu_epi32(&b[i]));
         __m256 v2 = _mm256_floor_ps(_mm256_div_ps(v0, v1));
         _mm256_storeu_si256((__m256i*)&c[i], _mm256_cvtps_epi32(v2));
     }
+
+    int32 t = size%8;
+    for(int i=1; i<=t; i++)
+        c[size-i] = floor(a[size-i] / (float32)b[size-i]);
 }
 
-void div_f32_array(uint64 size, float32* a, float32* b, float32* c) {
+void div_i32array_i32(uint64 size, int32* a, int32 b, int32* c) {
+    __m256 v1 = _mm256_cvtepi32_ps(_mm256_set1_epi32(b));
+    for(int32 i=0; i<size; i+=8) {
+        __m256 v0 = _mm256_cvtepi32_ps(_mm256_loadu_epi32(&a[i]));
+        __m256 v2 = _mm256_floor_ps(_mm256_div_ps(v0, v1));
+        _mm256_storeu_si256((__m256i*)&c[i], _mm256_cvtps_epi32(v2));
+    }
+
+    int32 t = size%8;
+    for(int i=1; i<=t; i++)
+        c[size-i] = floor(a[size-i] / (float32)b);
+}
+
+void div_f32array(uint64 size, float32* a, float32* b, float32* c) {
     for(int32 i=0; i<size; i+=8) {
         __m256 v0 = _mm256_loadu_ps(&a[i]);
         __m256 v1 = _mm256_loadu_ps(&b[i]);
         _mm256_storeu_ps(&c[i], _mm256_div_ps(v0, v1));
     }
+
+    int32 t = size%8;
+    for(int i=1; i<=t; i++)
+        c[size-i] = a[size-i] / b[size-1];
 }
 
-float32 dot_f32_array(uint64 size, float32* a, float32* b) {
+void div_f32array_f32(uint64 size, float32* a, float32 b, float32* c) {
+    __m256 v1 = _mm256_set1_ps(b);
+    for(int32 i=0; i<size; i+=8) {
+        __m256 v0 = _mm256_loadu_ps(&a[i]);
+        _mm256_storeu_ps(&c[i], _mm256_div_ps(v0, v1));
+    }
+
+    int32 t = size%8;
+    for(int i=1; i<=t; i++)
+        c[size-i] = a[size-i] / b;
+}
+
+float32 dot_f32array(uint64 size, float32* a, float32* b) {
     float* c = new float[size];
-    mul_f32_array(size, a, b, c);
-    float d = reduce_f32_array(size, c);
+    mul_f32array(size, a, b, c);
+    float d = reduce_f32array(size, c);
     delete[] c;
     return d;
 }
 
-void sqrt_f32_array(uint64 size, float32* a, float32* c) {
+void sqrt_f32array(uint64 size, float32* a, float32* c) {
     for(int32 i=0; i<size; i+=8) {
         __m256 v0 = _mm256_loadu_ps(&a[i]);
         _mm256_storeu_ps(&c[i], _mm256_sqrt_ps(v0));
     }
+
+    int32 t = size%8;
+    for(int i=1; i<=t; i++)
+        c[size-i] = sqrt(a[size-i]);
 }
 
 #endif

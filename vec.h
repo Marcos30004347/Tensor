@@ -7,7 +7,7 @@
 
 
 
-float32 reduce_f32_array(int64 size, float32* a) {
+float32 reduce_f32array(int64 size, float32* a) {
     #if defined(AVX)
         __m256 r = _mm256_loadu_ps(a);
 
@@ -42,7 +42,7 @@ float32 reduce_f32_array(int64 size, float32* a) {
 }
 
 
-int32 reduce_i32_array(unsigned size, int32* a) {
+int32 reduce_i32array(unsigned size, int32* a) {
     #if defined(AVX)
         __m256i r = _mm256_loadu_si256((__m256i*) &a[0]);
 
@@ -74,7 +74,7 @@ int32 reduce_i32_array(unsigned size, int32* a) {
 }
 
 
-void add_f32_array(unsigned size, float32* a, float32* b, float32* c) {
+void add_f32array(unsigned size, float32* a, float32* b, float32* c) {
     #if defined(AVX)
         for(int32 i=0; i<size; i+=8) {
             __m256 v0 = _mm256_loadu_ps(&a[i]);
@@ -94,7 +94,7 @@ void add_f32_array(unsigned size, float32* a, float32* b, float32* c) {
     #endif
 }
 
-void add_i32_array(unsigned size, int32* a, int32* b, int32* c) {
+void add_i32array(unsigned size, int32* a, int32* b, int32* c) {
     #if defined(AVX)
         for(int32 i=0; i<size; i+=8) {
             __m256i v0 = _mm256_loadu_si256((__m256i*) &a[i]);
@@ -115,7 +115,7 @@ void add_i32_array(unsigned size, int32* a, int32* b, int32* c) {
 }
 
 
-void sub_f32_array(unsigned size, float32* a, float32* b, float32* c) {
+void sub_f32array(unsigned size, float32* a, float32* b, float32* c) {
     #if defined(AVX)
         for(int32 i=0; i<size; i+=8) {
             __m256 v0 = _mm256_loadu_ps(&a[i]);
@@ -135,7 +135,7 @@ void sub_f32_array(unsigned size, float32* a, float32* b, float32* c) {
     #endif
 }
 
-void sub_i32_array(unsigned size, int32* a, int32* b, int32* c) {
+void sub_i32array(unsigned size, int32* a, int32* b, int32* c) {
     #if defined(AVX)
         for(int32 i=0; i<size; i+=8) {
             __m256i v0 = _mm256_loadu_si256((__m256i*) &a[0]);
@@ -156,7 +156,7 @@ void sub_i32_array(unsigned size, int32* a, int32* b, int32* c) {
 }
 
 
-void mul_f32_array(unsigned size, float32* a, float32* b, float32* c) {
+void mul_f32array(unsigned size, float32* a, float32* b, float32* c) {
     #if defined(AVX)
         for(int32 i=0; i<size; i+=8) {
             __m256 v0 = _mm256_loadu_ps(&a[i]);
@@ -176,7 +176,7 @@ void mul_f32_array(unsigned size, float32* a, float32* b, float32* c) {
     #endif
 }
 
-void mul_i32_array(unsigned size, int32* a, int32* b, int32* c) {
+void mul_i32array(unsigned size, int32* a, int32* b, int32* c) {
     #if defined(AVX)
         for(int32 i=0; i<size; i+=8) {
             __m256i v0 = _mm256_loadu_si256((__m256i*) &a[0]);
@@ -197,7 +197,7 @@ void mul_i32_array(unsigned size, int32* a, int32* b, int32* c) {
 }
 
 
-void div_f32_array(unsigned size, float32* a, float32* b, float32* c) {
+void div_f32array(unsigned size, float32* a, float32* b, float32* c) {
     #if defined(AVX)
         for(int32 i=0; i<size; i+=8) {
             __m256 v0 = _mm256_loadu_ps(&a[i]);
@@ -217,7 +217,7 @@ void div_f32_array(unsigned size, float32* a, float32* b, float32* c) {
     #endif
 }
 
-void fma_f32_array(unsigned size, float32* a, float32* b, float32* c, float32* d) {
+void fma_f32array(unsigned size, float32* a, float32* b, float32* c, float32* d) {
     #if defined(FMA_AVX)
         for(int32 i=0; i<size; i+=8) {
             __m256 v0 = _mm256_loadu_ps(&a[i]);
@@ -233,17 +233,17 @@ void fma_f32_array(unsigned size, float32* a, float32* b, float32* c, float32* d
             _mm_storeu_ps(&d[i], _mm_fmadd_ps(v0, v1, v2));
         }
     #else
-        add_f32_array(size, a, b, d);
-        mul_f32_array(size, d, c, d);
+        add_f32array(size, a, b, d);
+        mul_f32array(size, d, c, d);
     #endif
 }
 
-void fma_i32_array(unsigned size, int32* a, int32* b, int32* c, int32* d) {
-    add_i32_array(size, a, b, d);
-    mul_i32_array(size, d, c, d);
+void fma_i32array(unsigned size, int32* a, int32* b, int32* c, int32* d) {
+    add_i32array(size, a, b, d);
+    mul_i32array(size, d, c, d);
 }
 
-void mul_f32_array(unsigned size, float32* a, float32 b, float32* c) {
+void mul_f32array(unsigned size, float32* a, float32 b, float32* c) {
     #if defined(AVX)
         __m256 v1 = _mm256_set1_ps(b);
         for(int32 i=0; i<size; i+=8) {
@@ -264,7 +264,7 @@ void mul_f32_array(unsigned size, float32* a, float32 b, float32* c) {
     #endif
 }
 
-void mul_i32_array(unsigned size, int32* a, int32 b, int32* c) {
+void mul_i32array(unsigned size, int32* a, int32 b, int32* c) {
     #if defined(AVX)
         int32 l[8] = { b,b,b,b,b,b,b };
         for(int32 i=0; i<size; i+=8) {
@@ -286,7 +286,7 @@ void mul_i32_array(unsigned size, int32* a, int32 b, int32* c) {
 }
 
 
-void add_i32_array(unsigned size, int32* a, int32 b, int32* c) {
+void add_i32array(unsigned size, int32* a, int32 b, int32* c) {
     #if defined(AVX)
         __m256i v1 = _mm256_set1_epi32(b);
         for(int32 i=0; i<size; i+=8) {
@@ -307,7 +307,7 @@ void add_i32_array(unsigned size, int32* a, int32 b, int32* c) {
 }
 
 
-void add_f32_array(unsigned size, float32* a, float32 b, float32* c) {
+void add_f32array(unsigned size, float32* a, float32 b, float32* c) {
     #if defined(AVX)
         __m256 v1 = _mm256_set1_ps(b);
         for(int32 i=0; i<size; i+=8) {
@@ -327,7 +327,7 @@ void add_f32_array(unsigned size, float32* a, float32 b, float32* c) {
     #endif
 }
 
-void sub_f32_array(unsigned size, float32* a, float32 b, float32* c) {
+void sub_f32array(unsigned size, float32* a, float32 b, float32* c) {
     #if defined(AVX)
         __m256 v1 = _mm256_set1_ps(b);
         for(int32 i=0; i<size; i+=8) {
@@ -347,7 +347,7 @@ void sub_f32_array(unsigned size, float32* a, float32 b, float32* c) {
     #endif
 }
 
-void sub_i32_array(unsigned size, int32* a, int32 b, int32* c) {
+void sub_i32array(unsigned size, int32* a, int32 b, int32* c) {
     #if defined(AVX)
         __m256i v1 = _mm256_set1_epi32(b);
         for(int32 i=0; i<size; i+=8) {
@@ -368,11 +368,11 @@ void sub_i32_array(unsigned size, int32* a, int32 b, int32* c) {
 }
 
 
-float dot_f32_array(unsigned size, float32* a, float32* b) {
+float dot_f32array(unsigned size, float32* a, float32* b) {
     float* c = new float[size];
     
-    mul_f32_array(size, a, b, c);
-    float d = reduce_f32_array(size, c);
+    mul_f32array(size, a, b, c);
+    float d = reduce_f32array(size, c);
     
     delete[] c;
     
@@ -380,7 +380,7 @@ float dot_f32_array(unsigned size, float32* a, float32* b) {
 }
 
 
-void sqrt_f32_array(unsigned size, float32* a, float32* c) {
+void sqrt_f32array(unsigned size, float32* a, float32* c) {
     #if defined(AVX)
         for(int32 i=0; i<size; i+=8) {
             __m256 v0 = _mm256_loadu_ps(&a[i]);
@@ -408,9 +408,9 @@ void unfold_mat_x_multiple(int* i, int* I, int n, int N, int size, int* col) {
 
     for(int k=1; k<=N; k++) {
         if(k==n) continue;
-        sub_i32_array(size, &i[(k-1)*size], 1, A);
-        mul_f32_array(size, (float*)A, (float)M[k-1], (float*)A);
-        add_i32_array(size, col, A, col);
+        sub_i32array(size, &i[(k-1)*size], 1, A);
+        mul_f32array(size, (float*)A, (float)M[k-1], (float*)A);
+        add_i32array(size, col, A, col);
     }
 
     delete[] A;
@@ -418,5 +418,5 @@ void unfold_mat_x_multiple(int* i, int* I, int n, int N, int size, int* col) {
 }
 
 void unfold_mat_y_multiple(int* i, int* I, int n, int N, int size, int* lins) {
-    sub_i32_array(size, &i[(n-1)*size], 1, lins);
+    sub_i32array(size, &i[(n-1)*size], 1, lins);
 }
