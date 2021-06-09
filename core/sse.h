@@ -261,6 +261,7 @@ void sqrt_f32array(unsigned size, float32* a, float32* c) {
         __m128 v0 = _mm_loadu_ps(&a[i]);
         _mm_storeu_ps(&c[i], _mm_sqrt_ps(v0));
     }
+
     int32 t = size%4;
     for(int i=1; i<=t; i++)
         c[size-i] = sqrt(a[size-i]);
