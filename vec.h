@@ -5,7 +5,12 @@
 #include <cmath>
 #include <string.h>
 
-
+typedef int8_t  int8;
+typedef int32_t int32;
+typedef int64_t int64;
+typedef uint64_t uint64;
+typedef float   float32;
+typedef double  float64;
 
 float32 reduce_f32array(int64 size, float32* a) {
     #if defined(AVX)
@@ -46,7 +51,7 @@ int32 reduce_i32array(unsigned size, int32* a) {
     #if defined(AVX)
         __m256i r = _mm256_loadu_si256((__m256i*) &a[0]);
 
-        for(int32 i=8; i<size; i+=8)
+        for(int32 i=8; i < size; i+=8)
             r = _mm256_add_epi32(r, _mm256_loadu_si256((__m256i*) &a[i]));
 
         r = _mm256_hadd_epi32(r, r);

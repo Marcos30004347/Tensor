@@ -35,10 +35,6 @@ void foldVecY(int* i, int* n, int N, int c) {
 
 
 
-
-
-
-
 int unfoldMatX(int* i, int* I, int n, int N) {
     int col = 0;
 
@@ -125,37 +121,31 @@ int* allocate_indices_array(int* I, int N) {
 }
 
 
-
-
-
-
-
-
-
-
-void unfold_mat_x_multiple(int* i, int* I, int n, int N, int size, int* col) {
-    int* M = new int[N]{1};
-    int* A = new int[size];
-    
-    for(int m=1; m < N; m++)
-        if(m == n) M[m] = M[m-1];
-        else M[m] = M[m-1] * I[m-1];
-
-    for(int k=1; k<=N; k++) {
-        if(k==n) continue;
-        sub_i32array(size, &i[(k-1)*size], 1, A);
-        mul_f32array(size, (float*)A, (float)M[k-1], (float*)A);
-        add_i32array(size, col, A, col);
-    }
-
-    delete[] A;
-    delete[] M;
-}
-
-void unfold_mat_y_multiple(int* i, int* I, int n, int N, int size, int* lins) {
-    sub_i32array(size, &i[(n-1)*size], 1, lins);
-}
-
+//
+//
+//void unfold_mat_x_multiple(int* i, int* I, int n, int N, int size, int* col) {
+//    int* M = new int[N]{1};
+//    int* A = new int[size];
+//    
+//    for(int m=1; m < N; m++)
+//        if(m == n) M[m] = M[m-1];
+//        else M[m] = M[m-1] * I[m-1];
+//
+//    for(int k=1; k<=N; k++) {
+//        if(k==n) continue;
+//        sub_i32array(size, &i[(k-1)*size], 1, A);
+//        mul_f32array(size, (float*)A, (float)M[k-1], (float*)A);
+//        add_i32array(size, col, A, col);
+//    }
+//
+//    delete[] A;
+//    delete[] M;
+//}
+//
+//void unfold_mat_y_multiple(int* i, int* I, int n, int N, int size, int* lins) {
+//    sub_i32array(size, &i[(n-1)*size], 1, lins);
+//}
+//
 
 
 
