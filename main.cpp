@@ -1,7 +1,9 @@
 #include<iostream>
 #include <chrono>
-#include "tensor.h"
-#include "vec.h"
+//#include "tensor.h"
+//#include "vec.h"
+#include "core/windows.h"
+
 // int vectorCol(int* i, int* n, int N) {
 //     int col = i[0];
     
@@ -42,87 +44,87 @@
 //     i[0] = c;
 
 // }
-
-void print_vec(int* i, int* n, int N) {
-    int c = unfoldVecY(i, n, N);
-    printf("A[%i] = a", c);
-    for(int j=0; j<N; j++)
-        printf("%i", i[j]);
-    printf("\n");
-
-    printf("a");
-    int idx[N];
-    foldVecY(idx, n, N, c);
-    for(int j=0; j<N; j++)
-        printf("%i", idx[j]);
-    printf(" = A[%i]\n", c);
-}
-
-int matrixCol(int* i, int* I, int n, int N) {
-    int col = 0;
-
-    for(int k=1; k<=N; k++) {
-        if(k==n) continue;
-        
-        int t = 1;
-        for(int m=1; m<=k-1; m++) {
-            if(m == n) continue;
-            t*=I[m-1];
-        }
-
-        // printf("t = %i\n", t);
-        t *= i[k-1] - 1;
-        // printf("t *= %i\n", i[k-1] - 1);
-        col += t;
-        // printf("col = %i\n", col);
-    }
-
-    col+=1;
-    return col;
-}
-
-int matrixLine(int* i, int* I, int n, int N) {
-    return i[n-1];
-}
-
-
-void fold(int *i, int *I, int n, int N, int l, int c) {
-    i[n-1] = l;
-    c -= 1;
-    
-    for(int k=N; k>=1; k--) {
-        if(k == n) continue;
-
-        int t = 1;
-        
-        for(int m=k-1; m>=1; m--) {
-            if(m == n) continue;
-            t*=I[m-1];
-        }
-    
-        i[k-1] = 1 + c/t;
-        c = c % t;
-
-    }
-}
-
-void print_unfold(int* i, int* I, int n, int N) {
-    // unfold
-    int l =  unfoldMatY(i, I, n, N);
-    int c =  unfoldMatX(i, I, n, N);
-    printf("A[%i,%i] = a", l, c);
-    for(int idx=0; idx<N; idx++)
-        printf("%i", i[idx]);
-    printf("\n");
-
-    // fold
-    int a[N];
-    foldMatXY(a, I, n, N, l, c);
-    printf("a");
-    for(int idx=0; idx<N; idx++)
-        printf("%i", a[idx]);
-    printf(" = A[%i,%i]\n", l, c);
-}
+//
+//void print_vec(int* i, int* n, int N) {
+//    int c = unfoldVecY(i, n, N);
+//    printf("A[%i] = a", c);
+//    for(int j=0; j<N; j++)
+//        printf("%i", i[j]);
+//    printf("\n");
+//
+//    printf("a");
+//    int idx[100];
+//    foldVecY(idx, n, N, c);
+//    for(int j=0; j<N; j++)
+//        printf("%i", idx[j]);
+//    printf(" = A[%i]\n", c);
+//}
+//
+//int matrixCol(int* i, int* I, int n, int N) {
+//    int col = 0;
+//
+//    for(int k=1; k<=N; k++) {
+//        if(k==n) continue;
+//        
+//        int t = 1;
+//        for(int m=1; m<=k-1; m++) {
+//            if(m == n) continue;
+//            t*=I[m-1];
+//        }
+//
+//        // printf("t = %i\n", t);
+//        t *= i[k-1] - 1;
+//        // printf("t *= %i\n", i[k-1] - 1);
+//        col += t;
+//        // printf("col = %i\n", col);
+//    }
+//
+//    col+=1;
+//    return col;
+//}
+//
+//int matrixLine(int* i, int* I, int n, int N) {
+//    return i[n-1];
+//}
+//
+//
+//void fold(int *i, int *I, int n, int N, int l, int c) {
+//    i[n-1] = l;
+//    c -= 1;
+//    
+//    for(int k=N; k>=1; k--) {
+//        if(k == n) continue;
+//
+//        int t = 1;
+//        
+//        for(int m=k-1; m>=1; m--) {
+//            if(m == n) continue;
+//            t*=I[m-1];
+//        }
+//    
+//        i[k-1] = 1 + c/t;
+//        c = c % t;
+//
+//    }
+//}
+//
+//void print_unfold(int* i, int* I, int n, int N) {
+//    // unfold
+//    int l =  unfoldMatY(i, I, n, N);
+//    int c =  unfoldMatX(i, I, n, N);
+//    printf("A[%i,%i] = a", l, c);
+//    for(int idx=0; idx<N; idx++)
+//        printf("%i", i[idx]);
+//    printf("\n");
+//
+//    // fold
+//    int a[100];
+//    foldMatXY(a, I, n, N, l, c);
+//    printf("a");
+//    for(int idx=0; idx<N; idx++)
+//        printf("%i", a[idx]);
+//    printf(" = A[%i,%i]\n", l, c);
+//}
 
 
 #define SIZE 16000
@@ -155,54 +157,63 @@ void print_unfold(int* i, int* I, int n, int N) {
 // }
 
 int main() {
+    setup_core_lib();
+    
+    float32 a[] = { 1.f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f };
 
-    int I[3]  = {4,2,2}; 
-    // int is[3][16] = {
-    //     {1,1,2,3,2,1,3,2,1,1,2,3,2,1,3,2},
-    //     {1,1,2,3,2,1,3,2,1,1,2,3,2,1,3,2},
-    //     {1,1,2,3,2,1,3,2,1,1,2,3,2,1,3,2},
-    // };
+    std::cout << "Valor " << reduce_f32array(9, a) << std::endl;
+    std::cout << "SSE: " << InstructionSet::SSE() << std::endl;
+    std::cout << "SSE3: " << InstructionSet::SSE3() << std::endl;
+    std::cout << "SSE2: " << InstructionSet::SSE2() << std::endl;
+    std::cout << "AVX: " << InstructionSet::AVX() << std::endl;
+    std::cout << "AVX2: " << InstructionSet::AVX2() << std::endl;
+    std::cout << "FMA: " << InstructionSet::FMA() << std::endl;
 
-    int* is = allocate_indices_array(I, 3);
+    //int I[3]  = { 4, 2, 2 };
 
-    int R[3];
-    get_indices(is, I, R, 3);
-    int S = I[0]*I[1]*I[2];
-    for(int i=0; i<I[0]*I[1]*I[2]; i++)
-        printf("(%i, %i, %i)", is[0*S + i], is[1*S + i], is[2*S + i]);
-    printf("\n");
+    //int* is = allocate_indices_array(I, 3);
 
-    int col[I[0]*I[1]*I[2]] = {0};
-    int lin[I[0]*I[1]*I[2]] = {0};
+    //int R[3];
+    //get_indices(is, I, R, 3);
+    //int S = I[0]*I[1]*I[2];
 
-    unfold_mat_x_multiple(is, I, 1, 3, I[0]*I[1]*I[2], col);
-    unfold_mat_y_multiple(is, I, 1, 3, I[0]*I[1]*I[2], lin);
+    //for(int i=0; i<I[0]*I[1]*I[2]; i++)
+    //    printf("(%i, %i, %i)", is[0*S + i], is[1*S + i], is[2*S + i]);
+    //printf("\n");
 
-    for(int i=0; i<16; i++)
-        printf("  (%i, %i) ", lin[i], col[i]);
-    printf("\n");
+    //int col[16] = {0};
+    //int lin[16] = {0};
 
-    float* a = new float[SIZE]();
-    float* b = new float[SIZE]();
-    float* c = new float[SIZE]();
-    float* d = new float[SIZE]();
+    //unfold_mat_x_multiple(is, I, 1, 3, 16, col);
+    //unfold_mat_y_multiple(is, I, 1, 3, 16, lin);
 
-    for(int i=1; i<=(SIZE); i++) a[i-1] = (float)i;
-    for(int i=1; i<=(SIZE); i++) b[i-1] = (float)i;
-    for(int i=1; i<=(SIZE); i++) c[i-1] = (float)i;
-    for(int i=1; i<=(SIZE); i++) d[i-1] = (float)i;
+    //for(int i=0; i<16; i++)
+    //    printf("  (%i, %i) ", lin[i], col[i]);
+    //printf("\n");
 
-    std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
-    float dot = dot_f32array(SIZE, a, b);
-    std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
+    //float* a = new float[SIZE]();
+    //float* b = new float[SIZE]();
+    //float* c = new float[SIZE]();
+    //float* d = new float[SIZE]();
 
-    // for(int i=0; i<SIZE; i++)
-    //     printf("%f\n", c[i]);
+    //for(int i=1; i<=(SIZE); i++) a[i-1] = (float)i;
+    //for(int i=1; i<=(SIZE); i++) b[i-1] = (float)i;
+    //for(int i=1; i<=(SIZE); i++) c[i-1] = (float)i;
+    //for(int i=1; i<=(SIZE); i++) d[i-1] = (float)i;
 
-    printf("%f\n", dot);
-    std::cout << "Time difference = " << std::chrono::duration_cast<std::chrono::nanoseconds> (end - begin).count() << "[ns]" << std::endl;
-    std::cout << "Time difference = " << std::chrono::duration_cast<std::chrono::milliseconds> (end - begin).count() << "[ms]" << std::endl;
+    //std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
+    //float dot = dot_f32array(SIZE, a, b);
+    //std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
+
+    //// for(int i=0; i<SIZE; i++)
+    ////     printf("%f\n", c[i]);
+
+    //printf("%f\n", dot);
+    //std::cout << "Time difference = " << std::chrono::duration_cast<std::chrono::nanoseconds> (end - begin).count() << "[ns]" << std::endl;
+    //std::cout << "Time difference = " << std::chrono::duration_cast<std::chrono::milliseconds> (end - begin).count() << "[ms]" << std::endl;
+
     // printf("%f\n", k0);
+
 
     // int I[3]  = {4,3,2}; // dimensions 
 
