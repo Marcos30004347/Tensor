@@ -1,5 +1,7 @@
 #ifdef WINDOWS
 
+#include <windows.h>
+
 // https://stackoverflow.com/questions/21718027/getmodulehandlenull-vs-hinstances
 HMODULE getThisModuleHandle()
 {
@@ -11,7 +13,11 @@ HMODULE getThisModuleHandle()
 
     return hModule;
 }
+// https://docs.microsoft.com/en-us/windows/win32/api/libloaderapi/nf-libloaderapi-getmodulehandleexa?redirectedfrom=MSDN
 
+// https://cboard.cprogramming.com/windows-programming/117578-hmodule-current-dll.html
+
+// https://docs.microsoft.com/en-us/cpp/build/getprocaddress?view=msvc-160
 
 // typedef UINT (CALLBACK* LPFNDLLFUNC1)(DWORD,UINT);
 
