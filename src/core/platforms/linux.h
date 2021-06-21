@@ -1,14 +1,16 @@
 #if defined(__unix__) || defined(__linux__) || defined(_POSIX_VERSION) || (defined(__APPLE__) && defined(TARGET_OS_MAC))
 
-#include "types.h"
+#include "../types.h"
 
-#include "avx.h"
-#include "sse.h"
-#include "naive.h"
+#include "../handlers/avx.h"
+#include "../handlers/sse.h"
+#include "../handlers/naive.h"
 
 #if defined(__x86_64__) || defined(__i386__)
 
-static int32 (*resolve_reduce_i32array (void)) (uint64, int32*) {
+extern "C" {
+
+static i32 (*resolve_reduce_i32array (void)) (ui64, i32*) {
     __builtin_cpu_init ();
 
     if (
@@ -27,7 +29,7 @@ static int32 (*resolve_reduce_i32array (void)) (uint64, int32*) {
     return reduce_i32array_naive; 
 }
 
-static float32 (*resolve_reduce_f32array (void)) (uint64, float32*) {
+static f32 (*resolve_reduce_f32array (void)) (ui64, f32*) {
     __builtin_cpu_init ();
 
     if (
@@ -46,7 +48,7 @@ static float32 (*resolve_reduce_f32array (void)) (uint64, float32*) {
     return reduce_f32array_naive; 
 }
 
-static float32 (*resolve_dot_f32array (void)) (uint64, float32*, float32*) {
+static f32 (*resolve_dot_f32array (void)) (ui64, f32*, f32*) {
     __builtin_cpu_init ();
 
     if (
@@ -65,7 +67,7 @@ static float32 (*resolve_dot_f32array (void)) (uint64, float32*, float32*) {
     return dot_f32array_naive; 
 }
 
-static void (*resolve_add_f32array (void)) (uint64, float32*, float32*, float32*) {
+static void (*resolve_add_f32array (void)) (ui64, f32*, f32*, f32*) {
     __builtin_cpu_init ();
 
     if (
@@ -84,7 +86,7 @@ static void (*resolve_add_f32array (void)) (uint64, float32*, float32*, float32*
     return add_f32array_naive; 
 }
 
-static void (*resolve_add_i32array (void)) (uint64, int32*, int32*, int32*) {
+static void (*resolve_add_i32array (void)) (ui64, i32*, i32*, i32*) {
     __builtin_cpu_init ();
 
     if (
@@ -103,7 +105,7 @@ static void (*resolve_add_i32array (void)) (uint64, int32*, int32*, int32*) {
     return add_i32array_naive; 
 }
 
-static void (*resolve_add_i32array_i32 (void)) (uint64, int32*, int32, int32*) {
+static void (*resolve_add_i32array_i32 (void)) (ui64, i32*, i32, i32*) {
     __builtin_cpu_init ();
 
     if (
@@ -122,7 +124,7 @@ static void (*resolve_add_i32array_i32 (void)) (uint64, int32*, int32, int32*) {
     return add_i32array_i32_naive; 
 }
 
-static void (*resolve_add_f32array_f32 (void)) (uint64, float32*, float32, float32*) {
+static void (*resolve_add_f32array_f32 (void)) (ui64, f32*, f32, f32*) {
     __builtin_cpu_init ();
 
     if (
@@ -141,7 +143,7 @@ static void (*resolve_add_f32array_f32 (void)) (uint64, float32*, float32, float
     return add_f32array_f32_naive; 
 }
 
-static void (*resolve_sub_f32array (void)) (uint64, float32*, float32*, float32*) {
+static void (*resolve_sub_f32array (void)) (ui64, f32*, f32*, f32*) {
     __builtin_cpu_init ();
 
     if (
@@ -160,7 +162,7 @@ static void (*resolve_sub_f32array (void)) (uint64, float32*, float32*, float32*
     return sub_f32array_naive; 
 }
 
-static void (*resolve_sub_i32array (void)) (uint64, int32*, int32*, int32*) {
+static void (*resolve_sub_i32array (void)) (ui64, i32*, i32*, i32*) {
     __builtin_cpu_init ();
 
     if (
@@ -179,7 +181,7 @@ static void (*resolve_sub_i32array (void)) (uint64, int32*, int32*, int32*) {
     return sub_i32array_naive; 
 }
 
-static void (*resolve_sub_i32array_i32 (void)) (uint64, int32*, int32, int32*) {
+static void (*resolve_sub_i32array_i32 (void)) (ui64, i32*, i32, i32*) {
     __builtin_cpu_init ();
 
     if (
@@ -198,7 +200,7 @@ static void (*resolve_sub_i32array_i32 (void)) (uint64, int32*, int32, int32*) {
     return sub_i32array_i32_naive; 
 }
 
-static void (*resolve_sub_f32array_f32 (void)) (uint64, float32*, float32, float32*) {
+static void (*resolve_sub_f32array_f32 (void)) (ui64, f32*, f32, f32*) {
     __builtin_cpu_init ();
 
     if (
@@ -217,7 +219,7 @@ static void (*resolve_sub_f32array_f32 (void)) (uint64, float32*, float32, float
     return sub_f32array_f32_naive; 
 }
 
-static void (*resolve_mul_f32array (void)) (uint64, float32*, float32*, float32*) {
+static void (*resolve_mul_f32array (void)) (ui64, f32*, f32*, f32*) {
     __builtin_cpu_init ();
 
     if (
@@ -236,7 +238,7 @@ static void (*resolve_mul_f32array (void)) (uint64, float32*, float32*, float32*
     return mul_f32array_naive; 
 }
 
-static void (*resolve_mul_i32array (void)) (uint64, int32*, int32*, int32*) {
+static void (*resolve_mul_i32array (void)) (ui64, i32*, i32*, i32*) {
     __builtin_cpu_init ();
 
     if (
@@ -255,7 +257,7 @@ static void (*resolve_mul_i32array (void)) (uint64, int32*, int32*, int32*) {
     return mul_i32array_naive; 
 }
 
-static void (*resolve_mul_i32array_i32 (void)) (uint64, int32*, int32, int32*) {
+static void (*resolve_mul_i32array_i32 (void)) (ui64, i32*, i32, i32*) {
     __builtin_cpu_init ();
 
     if (
@@ -274,7 +276,7 @@ static void (*resolve_mul_i32array_i32 (void)) (uint64, int32*, int32, int32*) {
     return mul_i32array_i32_naive; 
 }
 
-static void (*resolve_mul_f32array_f32 (void)) (uint64, float32*, float32, float32*) {
+static void (*resolve_mul_f32array_f32 (void)) (ui64, f32*, f32, f32*) {
     __builtin_cpu_init ();
 
     if (
@@ -293,7 +295,7 @@ static void (*resolve_mul_f32array_f32 (void)) (uint64, float32*, float32, float
     return mul_f32array_f32_naive; 
 }
 
-static void (*resolve_div_f32array (void)) (uint64, float32*, float32*, float32*) {
+static void (*resolve_div_f32array (void)) (ui64, f32*, f32*, f32*) {
     __builtin_cpu_init ();
 
     if (
@@ -312,7 +314,7 @@ static void (*resolve_div_f32array (void)) (uint64, float32*, float32*, float32*
     return div_f32array_naive; 
 }
 
-static void (*resolve_div_i32array (void)) (uint64, int32*, int32*, int32*) {
+static void (*resolve_div_i32array (void)) (ui64, i32*, i32*, i32*) {
     __builtin_cpu_init ();
 
     if (
@@ -331,7 +333,7 @@ static void (*resolve_div_i32array (void)) (uint64, int32*, int32*, int32*) {
     return div_i32array_naive; 
 }
 
-static void (*resolve_div_i32array_i32 (void)) (uint64, int32*, int32, int32*) {
+static void (*resolve_div_i32array_i32 (void)) (ui64, i32*, i32, i32*) {
     __builtin_cpu_init ();
 
     if (
@@ -350,7 +352,7 @@ static void (*resolve_div_i32array_i32 (void)) (uint64, int32*, int32, int32*) {
     return div_i32array_i32_naive; 
 }
 
-static void (*resolve_div_f32array_f32 (void)) (uint64, float32*, float32, float32*) {
+static void (*resolve_div_f32array_f32 (void)) (ui64, f32*, f32, f32*) {
     __builtin_cpu_init ();
 
     if (
@@ -369,7 +371,7 @@ static void (*resolve_div_f32array_f32 (void)) (uint64, float32*, float32, float
     return div_f32array_f32_naive; 
 }
 
-static void (*resolve_sqrt_f32array (void)) (uint64, float32*, float32*) {
+static void (*resolve_sqrt_f32array (void)) (ui64, f32*, f32*) {
     __builtin_cpu_init ();
 
     if (
@@ -388,31 +390,57 @@ static void (*resolve_sqrt_f32array (void)) (uint64, float32*, float32*) {
     return sqrt_f32array_naive; 
 }
 
-void sqrt_f32array(uint64, float32*, float32, float32*) __attribute__ ((ifunc ("resolve_sqrt_f32array")));
-void div_f32array_f32(uint64, float32*, float32, float32*) __attribute__ ((ifunc ("resolve_div_f32array_f32")));
-void div_i32array_i32(uint64, int32*, int32, int32*) __attribute__ ((ifunc ("resolve_div_i32array_i32")));
-void div_i32array(uint64, int32*, int32*, int32*) __attribute__ ((ifunc ("resolve_div_i32array")));
-void div_f32array(uint64, float32*, float32*, float32*) __attribute__ ((ifunc ("resolve_div_f32array")));
-void mul_f32array_f32(uint64, float32*, float32, float32*) __attribute__ ((ifunc ("resolve_mul_f32array_f32")));
-void mul_i32array_i32(uint64, int32*, int32, int32*) __attribute__ ((ifunc ("resolve_mul_i32array_i32")));
-void mul_i32array(uint64, int32*, int32*, int32*) __attribute__ ((ifunc ("resolve_mul_i32array")));
-void mul_f32array(uint64, float32*, float32*, float32*) __attribute__ ((ifunc ("resolve_mul_f32array")));
-void sub_f32array_f32(uint64, float32*, float32, float32*) __attribute__ ((ifunc ("resolve_sub_f32array_f32")));
-void sub_i32array_i32(uint64, int32*, int32, int32*) __attribute__ ((ifunc ("resolve_sub_i32array_i32")));
-void sub_i32array(uint64, int32*, int32*, int32*) __attribute__ ((ifunc ("resolve_sub_i32array")));
-void sub_f32array(uint64, float32*, float32*, float32*) __attribute__ ((ifunc ("resolve_sub_f32array")));
-void add_f32array_f32(uint64, float32*, float32, float32*) __attribute__ ((ifunc ("resolve_add_f32array_f32")));
-void add_i32array_i32(uint64, int32*, int32, int32*) __attribute__ ((ifunc ("resolve_add_i32array_i32")));
-void add_i32array(uint64, int32*, int32*, int32*) __attribute__ ((ifunc ("resolve_add_i32array")));
-void add_f32array(uint64, float32*, float32*, float32*) __attribute__ ((ifunc ("resolve_add_f32array")));
-float32 dot_f32array(uint64, float32*, float32*) __attribute__ ((ifunc ("resolve_dot_f32array")));
-float32 reduce_f32array(uint64, float32*) __attribute__ ((ifunc ("resolve_reduce_f32array")));
-int32 reduce_i32array(uint64, int32*) __attribute__ ((ifunc ("resolve_reduce_i32array")));
+}
+
+void sqrt_f32array(ui64, f32*, f32*)
+    __attribute__ ((ifunc ("resolve_sqrt_f32array")));
+void div_f32array_f32(ui64, f32*, f32, f32*)
+    __attribute__ ((ifunc ("resolve_div_f32array_f32")));
+void div_i32array_i32(ui64, i32*, i32, i32*) 
+    __attribute__ ((ifunc ("resolve_div_i32array_i32")));
+void div_i32array(ui64, i32*, i32*, i32*) 
+    __attribute__ ((ifunc ("resolve_div_i32array")));
+void div_f32array(ui64, f32*, f32*, f32*) 
+    __attribute__ ((ifunc ("resolve_div_f32array")));
+void mul_f32array_f32(ui64, f32*, f32, f32*) 
+    __attribute__ ((ifunc ("resolve_mul_f32array_f32")));
+void mul_i32array_i32(ui64, i32*, i32, i32*) 
+    __attribute__ ((ifunc ("resolve_mul_i32array_i32")));
+void mul_i32array(ui64, i32*, i32*, i32*) 
+    __attribute__ ((ifunc ("resolve_mul_i32array")));
+void mul_f32array(ui64, f32*, f32*, f32*) 
+    __attribute__ ((ifunc ("resolve_mul_f32array")));
+void sub_f32array_f32(ui64, f32*, f32, f32*) 
+    __attribute__ ((ifunc ("resolve_sub_f32array_f32")));
+void sub_i32array_i32(ui64, i32*, i32, i32*) 
+    __attribute__ ((ifunc ("resolve_sub_i32array_i32")));
+void sub_i32array(ui64, i32*, i32*, i32*) 
+    __attribute__ ((ifunc ("resolve_sub_i32array")));
+void sub_f32array(ui64, f32*, f32*, f32*) 
+    __attribute__ ((ifunc ("resolve_sub_f32array")));
+void add_f32array_f32(ui64, f32*, f32, f32*) 
+    __attribute__ ((ifunc ("resolve_add_f32array_f32")));
+void add_i32array_i32(ui64, i32*, i32, i32*) 
+    __attribute__ ((ifunc ("resolve_add_i32array_i32")));
+void add_i32array(ui64, i32*, i32*, i32*) 
+    __attribute__ ((ifunc ("resolve_add_i32array")));
+void add_f32array(ui64, f32*, f32*, f32*) 
+    __attribute__ ((ifunc ("resolve_add_f32array")));
+f32 dot_f32array(ui64, f32*, f32*) 
+    __attribute__ ((ifunc ("resolve_dot_f32array")));
+f32 reduce_f32array(ui64, f32*) 
+    __attribute__ ((ifunc ("resolve_reduce_f32array")));
+i32 reduce_i32array(ui64, i32*) 
+    __attribute__ ((ifunc ("resolve_reduce_i32array")));
 
 void setup_core_lib(){}
+
+
 #endif
 
 #if defined(__arm__) || defined(_ARM) || defined(_M_ARM)
+
+#error TODO
 
 // https://community.arm.com/developer/tools-software/oss-platforms/b/android-blog/posts/runtime-detection-of-cpu-features-on-an-armv8-a-cpu
 // https://stackoverflow.com/questions/26701262/how-to-check-the-existence-of-neon-on-arm
@@ -420,27 +448,6 @@ void setup_core_lib(){}
 #include <dlfcn.h>
 #include <sys/auxv.h>
 #include <asm/hwcap.h>
-
-void sqrt_f32array(uint64, float32*, float32, float32*);
-void div_f32array_f32(uint64, float32*, float32, float32*);
-void div_i32array_i32(uint64, int32*, int32, int32*);
-void div_i32array(uint64, int32*, int32*, int32*);
-void div_f32array(uint64, float32*, float32*, float32*);
-void mul_f32array_f32(uint64, float32*, float32, float32*);
-void mul_i32array_i32(uint64, int32*, int32, int32*);
-void mul_i32array(uint64, int32*, int32*, int32*);
-void mul_f32array(uint64, float32*, float32*, float32*);
-void sub_f32array_f32(uint64, float32*, float32, float32*);;
-void sub_i32array_i32(uint64, int32*, int32, int32*) __attribute__ ((ifunc ("resolve_sub_i32array_i32")));
-void sub_i32array(uint64, int32*, int32*, int32*) __attribute__ ((ifunc ("resolve_sub_i32array")));
-void sub_f32array(uint64, float32*, float32*, float32*) __attribute__ ((ifunc ("resolve_sub_f32array")));
-void add_f32array_f32(uint64, float32*, float32, float32*) __attribute__ ((ifunc ("resolve_add_f32array_f32")));
-void add_i32array_i32(uint64, int32*, int32, int32*) __attribute__ ((ifunc ("resolve_add_i32array_i32")));
-void add_i32array(uint64, int32*, int32*, int32*) __attribute__ ((ifunc ("resolve_add_i32array")));
-void add_f32array(uint64, float32*, float32*, float32*) __attribute__ ((ifunc ("resolve_add_f32array")));
-float32 dot_f32array(uint64, float32*, float32*) __attribute__ ((ifunc ("resolve_dot_f32array")));
-float32 reduce_f32array(uint64, float32*) __attribute__ ((ifunc ("resolve_reduce_f32array")));
-int32 reduce_i32array(uint64, int32*) __attribute__ ((ifunc ("resolve_reduce_i32array")));
 
 
 void setup_core_lib(){
