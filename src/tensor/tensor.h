@@ -1,6 +1,7 @@
 #include <iostream>
+#include <string.h>
 
-#include "../core/core.h"
+#include "core/core.h"
 
 int unfoldVecY(int* i, int* n, int N) {
     int col = i[0];
@@ -88,7 +89,7 @@ void get_indices_rec(int* P, int* I, int* R, int N, int S, int* n, int j) {
     if(j == N) {
         int p = *n;
         for(int i=0; i<N; i++)
-            P[(i*S)+p] = R[i] + 1;
+            P[(i*S)+p] = R[i];
         
         *n = p+1;
         return;
@@ -121,28 +122,30 @@ int* allocate_indices_array(int* I, int N) {
     return idx;
 }
 
+void fold_mat_xy_multiple(int *i, int *I, int n, int N, int size, int* l, int* c) {
+    int* M = new int[N]{1};
+    int* T = new int[size]{0};
+    int* C = new int[size];
 
-void fold_mat_xy_multiple(int *i, int *I, int n, int N, int l, int size, int* col) {
-    // int* M = new int[N]{1};
+    memcpy(&i[(n-1)*size], l, size*sizeof(i32));// add_i32array_i32(size, l, 0, &i[(n-1)*size]);
+    memcpy(C, c, size*sizeof(i32));
 
-    // sub_i32array_i32(size, col, 1, i);
+    for(int m=1; m < N; m++)
+        if(m == n) M[m] = M[m-1];
+        else M[m] = M[m-1] * I[m-1];
 
-    // i[n-1] = l;
-            
-    // for(int m=1; m < N; m++)
-    //     if(m == n) M[m] = M[m-1];
-    //     else M[m] = M[m-1] * I[m-1];
+    for(int k=N; k>=1; k--) {
+        if(k != n) {
+            div_i32array_i32(size, C, M[k-1], &i[(k-1)*size]);
+            mul_i32array_i32(size, &i[(k-1)*size], M[k-1], T);
+            sub_i32array(size, C, T, C);
+        }
+    }
 
-    // for(int k=N; k>=1; k--) {
-    //     if(k != n) {
-    //         i[k-1] = 1 + c/M[k-1];
-    //         c = c % M[k-1];
-    //     }
-    // }
-
-    // delete[] M;
+    delete[] M;
+    delete[] T;
+    delete[] C;
 }
-
 
 void unfold_mat_x_multiple(int* i, int* I, int n, int N, int size, int* col) {
    int* M = new int[N]{1};
@@ -154,7 +157,7 @@ void unfold_mat_x_multiple(int* i, int* I, int n, int N, int size, int* col) {
 
    for(int k=1; k<=N; k++) {
        if(k==n) continue;
-        sub_i32array_i32(size, &i[(k-1)*size], 1, A);
+        memcpy(A, &i[(k-1)*size], size*sizeof(i32)); // sub_i32array_i32(size, &i[(k-1)*size], 0, A);
         mul_i32array_i32(size, A, M[k-1], A);
         add_i32array(size, col, A, col);
    }
@@ -164,13 +167,8 @@ void unfold_mat_x_multiple(int* i, int* I, int n, int N, int size, int* col) {
 }
 
 void unfold_mat_y_multiple(int* i, int* I, int n, int N, int size, int* lins) {
-   sub_i32array_i32(size, &i[(n-1)*size], 1, lins);
+   memcpy(lins, &i[(n-1)*size], size*sizeof(i32));// sub_i32array_i32(size, &i[(n-1)*size], 0, lins);
 }
-
-
-
-
-
 
 
 int isOddPermutations(int* a, int n) {

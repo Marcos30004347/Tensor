@@ -4,8 +4,8 @@
 #include <cmath>
 #include "macros.h"
 
-#include "../types.h"
-#include "../simd/sse.h"
+#include "core/types.h"
+#include "core/simd/sse.h"
 
 
 TENSOR_EXPORT f32 reduce_f32array_sse(ui64 size, f32* a) {

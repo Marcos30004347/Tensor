@@ -14,6 +14,8 @@ add_executable(
     src/main.cpp
 )
 
+target_include_directories(Tensor PRIVATE "src/")
+
 # Optimize for current architecture
 if(TENSOR_OPTIMIZE_NATIVE)
     if(

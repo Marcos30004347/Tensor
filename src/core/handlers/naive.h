@@ -3,7 +3,7 @@
 
 #include <cmath>
 #include "macros.h"
-#include "../types.h"
+#include "core/types.h"
 
 TENSOR_EXPORT f32 reduce_f32array_naive(ui64 size, f32* a) {
     f32 r = 0;

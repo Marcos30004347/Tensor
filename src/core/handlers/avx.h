@@ -3,8 +3,8 @@
 
 #include "macros.h"
 
-#include "../types.h"
-#include "../simd/avx.h"
+#include "core/types.h"
+#include "core/simd/avx.h"
 
 #include <cmath>
 
@@ -138,10 +138,23 @@ TENSOR_EXPORT void sub_i32array_avx(ui64 size, i32* a, i32* b, i32* c) {
     ui64 k = (size - size % 8);
 
     for (i32 i = 0; i < k; i += 8) {
-        __m256i v0 = _mm256_loadu_si256((__m256i*) & a[0]);
-        __m256i v1 = _mm256_loadu_si256((__m256i*) & b[0]);
-        _mm256_store_si256((__m256i*) & c[i], _mm256_sub_epi32(v0, v1));
+        __m256i v0 = _mm256_loadu_si256((__m256i*)&a[i]);
+        __m256i v1 = _mm256_loadu_si256((__m256i*)&b[i]);
+        _mm256_store_si256((__m256i*)&c[i], _mm256_sub_epi32(v0, v1));
     }
+
+
+    // for (i32 i = 0; i < k; i += 8) {
+    //     __m256i v0 = _mm256_loadu_si256((__m256i*) & a[i]);
+    //     __m256i v1 = _mm256_loadu_si256((__m256i*) & b[i]);
+    //     __m256 res = _mm256_sub_ps(
+    //         _mm256_cvtepi32_ps(v0),
+    //         _mm256_cvtepi32_ps(v1)
+    //     );
+        
+    //     _mm256_storeu_si256((__m256i*) & c[i], _mm256_cvtps_epi32(res));
+    // }
+
 
     i32 t = size % 8;
     for (int i = 1; i <= t; i++)
